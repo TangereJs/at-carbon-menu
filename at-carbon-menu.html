@@ -1,17 +1,110 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../at-theme/at-theme.html">
+<link rel="import" href="../at-core-dropdown/at-core-dropdown.html">
+
 <dom-module id="at-carbon-menu">
   <template>
+    <style include="at-form-common"></style>
     <style>
+      :host{
+        display: block;
+        box-sizing: border-box;
+      }
+
+      .trigger {
+        position: relative;
+        width: 375px;
+        height: 35px;
+        background-color: beige;
+        text-align: center;
+        line-height: 35px;
+        font-size: 16px;
+      }
+
+      .carbon-menu-item {
+
+      }
+
+      .carbon-menu-item.highlighted {
+
+      }
+
+      .carbon-menu-item.selected,
+      .carbon-menu-item.selected.highlighted  {
+
+      }
     </style>
+
+    <div id="trigger" class="trigger" on-tap="_trigger_onTap">
+      TEMP Trigger! This will be removed
+    </div>
+    <div>
+      <at-core-dropdown id="dropdown">
+        <div id="insertPoint">
+
+        </div>
+      </at-core-dropdown>
+    </div>
+
   </template>
   <script>
     'use strict';
     Polymer({
       is: 'at-carbon-menu',
+      hostAttributes: {
+        tabIndex: 0
+      },
       properties: {
-
+        items: {
+          type: Array,
+          value: function() {
+            return [];
+          },
+          observer: '_itemsChanged'
+        },
+        value: {
+          type: String,
+          value: "",
+          observer: '_valueChanged'
+        }
       },
       ready: function () {
 
+      },
+      _clearInsertPoint: function () {
+        var insertPoint = this.$.insertPoint;
+        var firstChild = Polymer.dom(insertPoint).firstChild;
+
+        while(firstChild) {
+          Polymer.dom(insertPoint).removeChild(firstChild);
+          firstChild = Polymer.dom(insertPoint).firstChild;
+        }
+
+        Polymer.dom.flush();
+      },
+      _itemsChanged: function (newValue, oldValue) {
+        this._clearInsertPoint();
+        var insertPoint = this.$.insertPoint;
+        var itemPrototype = document.createElement('div');
+        var itemDiv;
+
+        // new value is an array of title, name (value) pairs
+        for (var i = 0; i < newValue.length; i++) {
+          item = newValue[i];
+          itemDiv = itemPrototype.cloneNode();
+          Polymer.dom(itemDiv).setAttribute('carbon-menu-value', item.value);
+          Polymer.dom(itemDiv).textContent = item.title;
+          Polymer.dom(insertPoint).appendChild(itemDiv);
+        }
+
+      },
+      _valueChanged: function (newValue, oldValue) {
+
+      },
+      _trigger_onTap: function (event) {
+        var dropdown = this.$.dropdown;
+        var trigger = this.$.trigger;
+        dropdown.toggle(trigger, event);
       }
     });
   </script>
