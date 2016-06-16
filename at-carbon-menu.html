@@ -1,14 +1,19 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../at-theme/at-theme.html">
 <link rel="import" href="../at-core-dropdown/at-core-dropdown.html">
+<link rel="import" href="../at-carbon-icon-button/at-carbon-icon-button.html">
 
 <dom-module id="at-carbon-menu">
   <template>
     <style include="at-form-common"></style>
     <style>
-      :host{
+      :host {
         display: block;
         box-sizing: border-box;
+      }
+
+      :host:focus {
+        outline: none;
       }
 
       .trigger {
@@ -22,27 +27,25 @@
       }
 
       .carbon-menu-item {
-
+        padding: 6px 12px;
+        cursor: pointer;
+        @apply(--at-form-label-font);
       }
 
       .carbon-menu-item.highlighted {
-
+        @apply(--at-text-selected);
       }
 
       .carbon-menu-item.selected,
-      .carbon-menu-item.selected.highlighted  {
-
+      .carbon-menu-item.selected.highlighted {
+        @apply(--at-text-primary-selected);
       }
     </style>
 
-    <div id="trigger" class="trigger" on-tap="_trigger_onTap">
-      TEMP Trigger! This will be removed
-    </div>
+    <at-carbon-icon-button id="trigger" icon="now:menu"></at-carbon-icon-button>
     <div>
       <at-core-dropdown id="dropdown">
-        <div id="insertPoint">
-
-        </div>
+        <div id="insertPoint" on-tap="_insertPoint_onTap" on-mouseover="_insertPoint_onMouseover"></div>
       </at-core-dropdown>
     </div>
 
@@ -53,6 +56,10 @@
       is: 'at-carbon-menu',
       hostAttributes: {
         tabIndex: 0
+      },
+      listeners: {
+        'trigger.tap': '_host_onTap',
+        'trigger.keydown': '_host_onKeydown'
       },
       properties: {
         items: {
@@ -68,25 +75,215 @@
           observer: '_valueChanged'
         }
       },
-      ready: function () {
+
+      _keyCodes: {
+        ESC: 27,
+        TAB: 9,
+        ARROW_UP: 38,
+        ARROW_DOWN: 40,
+        ENTER: 13,
+        SPACE: 32
+      },
+      ready: function() {
+      },
+      _host_onTap: function(event) {
+        if (this._isEnterAsTap) {
+          this._isEnterAsTap = false;
+          return ;
+        }
+
+        var itemsLen = this.items.length;
+        if (itemsLen < 1) { return; }
+
+        var dropdown = this.$.dropdown;
+        var trigger = this.$.trigger;
+
+        dropdown.toggle(trigger, event);
+        this._initHighlighted();
+      },
+      _insertPoint_onTap: function (event) {
+        var highlighted = event.target;
+        var attrValue = highlighted.getAttribute('carbon-menu-value');
+        if (!attrValue) { return ; }
+
+        var insertPoint = this.$.insertPoint;
+        var selected = Polymer.dom(insertPoint).querySelector('.selected');
+        if (selected) {
+          Polymer.dom(selected).classList.remove('selected');
+        }
+
+        Polymer.dom(highlighted).classList.add('highlighted');
+        Polymer.dom(highlighted).classList.add('selected');
+
+        var dropdown = this.$.dropdown;
+        dropdown.hide(event);
+
+        this.value = attrValue;
+        this.fire('value-changed', { value: this.value });
+      },
+      _insertPoint_onMouseover: function (event) {
+        var insertPoint = this.$.insertPoint;
+        var highlighted = Polymer.dom(insertPoint).querySelector('.highlighted');
+        if (highlighted) {
+          Polymer.dom(highlighted).classList.remove('highlighted');
+        }
+
+        var target = event.target;
+        Polymer.dom(target).classList.add('highlighted');
+      },
+      _host_onKeydown: function(event) {
+        var dropdown = this.$.dropdown;
+        var dropdownOpen = dropdown.isOpen();
+
+        var keyCodes = this._keyCodes;
+        var keyCode = event.which;
+        var trigger = this.$.trigger;
+
+        switch (keyCode) {
+          case keyCodes.ENTER:
+          case keyCodes.SPACE:
+            this._isEnterAsTap = true;
+            if (!dropdownOpen) {
+              var itemsLen = this.items.length;
+              if (itemsLen < 1) { return; }
+              dropdown.toggle(trigger, event);
+              this._initHighlighted();
+            } else {
+              this._select();
+              dropdown.hide(event);
+            }
+            break;
+          case keyCodes.ESC:
+            dropdown.hide(event);
+            break;
+          case keyCodes.ARROW_UP:
+            if (dropdownOpen) {
+              this._highlightPrevious();
+            }
+            break;
+          case keyCodes.ARROW_DOWN:
+            if (dropdownOpen) {
+              this._highlightNext();
+            }
+            break;
+          case keyCodes.TAB:
+            dropdown.hide(event);
+            break;
+          default:
+            break;
+        }
+      },
+      _initHighlighted: function() {
+        var insertPoint = this.$.insertPoint;
+
+        var highlighted = Polymer.dom(insertPoint).querySelector('.highlighted');
+        if (highlighted) {
+          Polymer.dom(highlighted).classList.remove('highlighted');
+        }
+
+        var selected = Polymer.dom(insertPoint).querySelector('.selected');
+        if (!selected && !highlighted) {
+          var firstElemChild = Polymer.dom(insertPoint).firstElementChild;
+          if (firstElemChild) {
+            Polymer.dom(firstElemChild).classList.add('highlighted');
+          }
+        } else if (selected) {
+          Polymer.dom(selected).classList.add('highlighted');
+        }
+      },
+      _highlightPrevious: function() {
+        var insertPoint = this.$.insertPoint;
+        var highlighted = Polymer.dom(insertPoint).querySelector('.highlighted');
+        if (highlighted) {
+          Polymer.dom(highlighted).classList.remove('highlighted');
+          var prevElemSibling = Polymer.dom(highlighted).previousElementSibling;
+          if (prevElemSibling) {
+            Polymer.dom(prevElemSibling).classList.add('highlighted');
+          } else {
+            var lastElemChild = Polymer.dom(insertPoint).lastElementChild;
+            if (lastElemChild) {
+              Polymer.dom(lastElemChild).classList.add('highlighted');
+            }
+          }
+        } else {
+          var selected = Polymer.dom(insertPoint).querySelector('.selected');
+          if (selected) {
+            var prevElemSibling = Polymer.dom(selected).previousElementSibling;
+            if (prevElemSibling) {
+              Polymer.dom(prevElemSibling).classList.add('highlighted');
+            } else {
+              var lastElemChild = Polymer.dom(insertPoint).lastElementChild;
+              if (lastElemChild) {
+                Polymer.dom(lastElemChild).classList.add('highlighted');
+              }
+            }
+          }
+        }
+      },
+      _highlightNext: function() {
+        var insertPoint = this.$.insertPoint;
+        var highlighted = Polymer.dom(insertPoint).querySelector('.highlighted');
+        if (highlighted) {
+          Polymer.dom(highlighted).classList.remove('highlighted');
+          var nextElemSibling = Polymer.dom(highlighted).nextElementSibling;
+          if (nextElemSibling) {
+            Polymer.dom(nextElemSibling).classList.add('highlighted');
+          } else {
+            var firstElemChild = Polymer.dom(insertPoint).firstElementChild;
+            if (firstElemChild) {
+              Polymer.dom(firstElemChild).classList.add('highlighted');
+            }
+          }
+        } else {
+          var selected = Polymer.dom(insertPoint).querySelector('.selected');
+          if (selected) {
+            var nextElemSibling = Polymer.dom(selected).nextElementSibling;
+            if (nextElemSibling) {
+              Polymer.dom(nextElemSibling).classList.add('highlighted');
+            } else {
+              var firstElemChild = Polymer.dom(insertPoint).firstElementChild;
+              if (firstElemChild) {
+                Polymer.dom(firstElemChild).classList.add('highlighted');
+              }
+            }
+          }
+        }
+      },
+      _select: function() {
+        var insertPoint = this.$.insertPoint;
+        var selected = Polymer.dom(insertPoint).querySelector('.selected');
+        if (selected) {
+          Polymer.dom(selected).classList.remove('selected');
+        }
+
+        var highlighted = Polymer.dom(insertPoint).querySelector('.highlighted');
+        if (highlighted) {
+          Polymer.dom(highlighted).classList.add('selected');
+
+          this.value = highlighted.getAttribute('carbon-menu-value');
+          this.fire('value-changed', { value: this.value });
+        }
 
       },
-      _clearInsertPoint: function () {
+      _clearInsertPoint: function() {
         var insertPoint = this.$.insertPoint;
         var firstChild = Polymer.dom(insertPoint).firstChild;
 
-        while(firstChild) {
+        while (firstChild) {
           Polymer.dom(insertPoint).removeChild(firstChild);
           firstChild = Polymer.dom(insertPoint).firstChild;
         }
 
         Polymer.dom.flush();
       },
-      _itemsChanged: function (newValue, oldValue) {
+      _itemsChanged: function(newValue, oldValue) {
         this._clearInsertPoint();
         var insertPoint = this.$.insertPoint;
         var itemPrototype = document.createElement('div');
+        Polymer.dom(itemPrototype).classList.add('carbon-menu-item');
+        var ipDocumentFragmet = document.createDocumentFragment();
         var itemDiv;
+        var item;
 
         // new value is an array of title, name (value) pairs
         for (var i = 0; i < newValue.length; i++) {
@@ -94,17 +291,24 @@
           itemDiv = itemPrototype.cloneNode();
           Polymer.dom(itemDiv).setAttribute('carbon-menu-value', item.value);
           Polymer.dom(itemDiv).textContent = item.title;
-          Polymer.dom(insertPoint).appendChild(itemDiv);
+          Polymer.dom(ipDocumentFragmet).appendChild(itemDiv);
+        }
+        Polymer.dom(insertPoint).appendChild(ipDocumentFragmet);
+        Polymer.dom.flush();
+      },
+      _valueChanged: function(newValue, oldValue) {
+        var insertPoint = this.$.insertPoint;
+        var selected = Polymer.dom(insertPoint).querySelector('.selected');
+        if (selected) {
+          Polymer.dom(selected).classList.remove('selected');
+          Polymer.dom(selected).classList.remove('highlighted');
         }
 
-      },
-      _valueChanged: function (newValue, oldValue) {
-
-      },
-      _trigger_onTap: function (event) {
-        var dropdown = this.$.dropdown;
-        var trigger = this.$.trigger;
-        dropdown.toggle(trigger, event);
+        var toSelect = Polymer.dom(insertPoint).querySelector('div[carbon-menu-value=' + newValue + ']');
+        if (toSelect) {
+          Polymer.dom(toSelect).classList.add('selected');
+          Polymer.dom(toSelect).classList.add('highlighted');
+        }
       }
     });
   </script>
