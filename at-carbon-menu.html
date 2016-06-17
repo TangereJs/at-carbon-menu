@@ -110,6 +110,7 @@
         var selected = Polymer.dom(insertPoint).querySelector('.selected');
         if (selected) {
           Polymer.dom(selected).classList.remove('selected');
+          Polymer.dom(selected).classList.remove('highlighted');          
         }
 
         Polymer.dom(highlighted).classList.add('highlighted');
