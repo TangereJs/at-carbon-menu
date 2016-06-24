@@ -1,7 +1,5 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../at-theme/at-theme.html">
-<link rel="import" href="../at-core-dropdown/at-core-dropdown.html">
-<link rel="import" href="../at-carbon-icon-button/at-carbon-icon-button.html">
 
 <dom-module id="at-carbon-menu">
   <template>
@@ -13,17 +11,7 @@
       }
 
       :host:focus {
-        outline: none;
-      }
-
-      .trigger {
-        position: relative;
-        width: 375px;
-        height: 35px;
-        background-color: beige;
-        text-align: center;
-        line-height: 35px;
-        font-size: 16px;
+        /*outline: none;*/
       }
 
       .carbon-menu-item {
@@ -42,24 +30,20 @@
       }
     </style>
 
-    <at-carbon-icon-button id="trigger" icon="now:menu"></at-carbon-icon-button>
-    <div>
-      <at-core-dropdown id="dropdown">
-        <div id="insertPoint" on-tap="_insertPoint_onTap" on-mouseover="_insertPoint_onMouseover"></div>
-      </at-core-dropdown>
-    </div>
+    <div id="insertPoint" on-tap="_insertPoint_onTap" on-mouseover="_insertPoint_onMouseover" tabindex="0"></div>
 
   </template>
   <script>
     'use strict';
     Polymer({
       is: 'at-carbon-menu',
-      hostAttributes: {
-        tabIndex: 0
-      },
+      // hostAttributes: {
+      //   tabindex: 0
+      // },
       listeners: {
-        'trigger.tap': '_host_onTap',
-        'trigger.keydown': '_host_onKeydown'
+        'insertPoint.tap': '_host_onTap',
+        'insertPoint.keydown': '_host_onKeydown',
+        'insertPoint.focus': '_initHighlighted'
       },
       properties: {
         items: {
@@ -95,10 +79,6 @@
         var itemsLen = this.items.length;
         if (itemsLen < 1) { return; }
 
-        var dropdown = this.$.dropdown;
-        var trigger = this.$.trigger;
-
-        dropdown.toggle(trigger, event);
         this._initHighlighted();
       },
       _insertPoint_onTap: function (event) {
@@ -110,14 +90,11 @@
         var selected = Polymer.dom(insertPoint).querySelector('.selected');
         if (selected) {
           Polymer.dom(selected).classList.remove('selected');
-          Polymer.dom(selected).classList.remove('highlighted');          
+          Polymer.dom(selected).classList.remove('highlighted');
         }
 
         Polymer.dom(highlighted).classList.add('highlighted');
         Polymer.dom(highlighted).classList.add('selected');
-
-        var dropdown = this.$.dropdown;
-        dropdown.hide(event);
 
         this.value = attrValue;
         this.fire('value-changed', { value: this.value });
@@ -133,42 +110,24 @@
         Polymer.dom(target).classList.add('highlighted');
       },
       _host_onKeydown: function(event) {
-        var dropdown = this.$.dropdown;
-        var dropdownOpen = dropdown.isOpen();
-
         var keyCodes = this._keyCodes;
         var keyCode = event.which;
-        var trigger = this.$.trigger;
 
         switch (keyCode) {
           case keyCodes.ENTER:
           case keyCodes.SPACE:
             this._isEnterAsTap = true;
-            if (!dropdownOpen) {
-              var itemsLen = this.items.length;
-              if (itemsLen < 1) { return; }
-              dropdown.toggle(trigger, event);
-              this._initHighlighted();
-            } else {
-              this._select();
-              dropdown.hide(event);
-            }
+            this._select();
             break;
           case keyCodes.ESC:
-            dropdown.hide(event);
             break;
           case keyCodes.ARROW_UP:
-            if (dropdownOpen) {
-              this._highlightPrevious();
-            }
+            this._highlightPrevious();
             break;
           case keyCodes.ARROW_DOWN:
-            if (dropdownOpen) {
-              this._highlightNext();
-            }
+            this._highlightNext();
             break;
           case keyCodes.TAB:
-            dropdown.hide(event);
             break;
           default:
             break;
