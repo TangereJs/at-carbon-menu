@@ -28,6 +28,11 @@
       .carbon-menu-item.selected.highlighted {
         @apply(--at-text-primary-selected);
       }
+
+      #insertPoint:focus {
+        outline: none;
+      }
+
     </style>
 
     <div id="insertPoint" on-tap="_insertPoint_onTap" on-mouseover="_insertPoint_onMouseover" tabindex="0"></div>
@@ -37,9 +42,6 @@
     'use strict';
     Polymer({
       is: 'at-carbon-menu',
-      // hostAttributes: {
-      //   tabindex: 0
-      // },
       listeners: {
         'insertPoint.tap': '_host_onTap',
         'insertPoint.keydown': '_host_onKeydown',
