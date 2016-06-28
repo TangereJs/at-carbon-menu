@@ -8,10 +8,11 @@
       :host {
         display: block;
         box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent; /* this fixes tap flickering on iPad/iPhone*/
       }
 
       :host:focus {
-        /*outline: none;*/
+        outline: none;
       }
 
       .carbon-menu-item {
@@ -148,6 +149,7 @@
           var firstElemChild = Polymer.dom(insertPoint).firstElementChild;
           if (firstElemChild) {
             Polymer.dom(firstElemChild).classList.add('highlighted');
+            Polymer.dom(firstElemChild).classList.add('selected');
           }
         } else if (selected) {
           Polymer.dom(selected).classList.add('highlighted');
