@@ -1,4 +1,4 @@
-<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../tangere/tangere.html">
 <link rel="import" href="../at-theme/at-theme.html">
 
 <dom-module id="at-carbon-menu">
@@ -54,7 +54,23 @@
           value: function() {
             return [];
           },
-          observer: '_itemsChanged'
+          observer: '_itemsChanged',
+          schema: {
+            items: {
+              properties: {
+                title: {
+                  type: String,
+                  title: "Title",
+                  "default": ""
+                },
+                value: {
+                  type: String,
+                  title: "Value",
+                  "default": ""
+                }
+              }
+            }
+          }
         },
         value: {
           type: String,
