@@ -2,8 +2,9 @@
   "name": "at-carbon-menu",
   "private": true,
   "dependencies": {
-    "polymer": "Polymer/polymer#0.8-preview",
-    "at-theme": "TangereJs/at-theme#0.8-preview"
+    "tangere": "TangereJs/tangere#0.8-preview",
+    "at-theme": "TangereJs/at-theme#0.8-preview",
+    "at-doc-viewer": "TangereJs/at-doc-viewer#0.8-preview"
   },
   "version": "0.0.0.1"
 }
