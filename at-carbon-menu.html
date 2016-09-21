@@ -256,6 +256,7 @@
 
         Polymer.dom.flush();
       },
+
       _itemsChanged: function(newValue, oldValue) {
         this._clearInsertPoint();
         var insertPoint = this.$.insertPoint;
@@ -271,6 +272,10 @@
           itemDiv = itemPrototype.cloneNode();
           Polymer.dom(itemDiv).setAttribute('carbon-menu-value', item.value);
           Polymer.dom(itemDiv).textContent = item.title;
+          if (item.value === this.value) {
+            Polymer.dom(itemDiv).classList.add('selected');
+            Polymer.dom(itemDiv).classList.add('highlighted');
+          }
           Polymer.dom(ipDocumentFragmet).appendChild(itemDiv);
         }
         Polymer.dom(insertPoint).appendChild(ipDocumentFragmet);
