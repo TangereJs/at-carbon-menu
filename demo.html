@@ -13,6 +13,9 @@
         <h4>at-carbon-menu demo</h4>
       </div>
       <div>
+        <button type="button" id="toggleItem6">Toggle Item 6</button>
+      </div>
+      <div>
         at-carbon-menu value echo: <span id="carbonMenu1Value"></span>
       </div>
       <div>
@@ -59,6 +62,20 @@
         carbonMenu1Value.textContent = carbonMenu1.value;
         carbonMenu1.addEventListener('value-changed', function(event) {
           carbonMenu1Value.textContent = carbonMenu1.value;
+        });
+
+        var toggleItem6 = document.getElementById('toggleItem6');
+        toggleItem6.addEventListener('click', function(event) {
+          if (carbonMenu1.items.length === 6) {
+            // item 6 is added; remove it
+            carbonMenu1.items.splice(5);
+          } else {
+            carbonMenu1.items.push({
+              title: "Item 6",
+              value: "item6"
+            });
+          }
+          carbonMenu1._itemsChanged(carbonMenu1.items);
         });
 
         menuItems = [{
