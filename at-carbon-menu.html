@@ -1,5 +1,6 @@
 <link rel="import" href="../tangere/tangere.html">
 <link rel="import" href="../at-theme/at-theme.html">
+<link rel="import" href="../at-core-view/at-core-view.html">
 
 <dom-module id="at-carbon-menu">
   <template>
@@ -16,6 +17,8 @@
       }
 
       .carbon-menu-item {
+        box-sizing: border-box;
+        display: block;
         padding: 6px 12px;
         cursor: pointer;
         @apply(--at-form-label-font);
@@ -54,7 +57,6 @@
           value: function() {
             return [];
           },
-          observer: '_itemsChanged',
           schema: {
             items: {
               properties: {
@@ -74,10 +76,17 @@
         },
         value: {
           type: String,
-          value: "",
-          observer: '_valueChanged'
+          value: ""
+        },
+        itemView: {
+          type: String,
+          value: '<div>{{title}}</div>'
         }
       },
+
+      observers: [
+        '_renderMenu(items.*, value, itemView)'
+      ],
 
       _keyCodes: {
         ESC: 27,
@@ -101,7 +110,7 @@
         this._initHighlighted();
       },
       _insertPoint_onTap: function (event) {
-        var highlighted = event.target;
+        var highlighted = event.target.parentElement;
         var attrValue = highlighted.getAttribute('carbon-menu-value');
         if (!attrValue) { return ; }
 
@@ -116,7 +125,7 @@
         Polymer.dom(highlighted).classList.add('selected');
 
         this.value = attrValue;
-        this.fire('value-changed', { value: this.value });
+        this._fireValueChangedEvent(this.value);
       },
       _insertPoint_onMouseover: function (event) {
         var insertPoint = this.$.insertPoint;
@@ -126,6 +135,9 @@
         }
 
         var target = event.target;
+        if (target.is !== 'at-core-view') {
+          target = target.parentElement;
+        }
         Polymer.dom(target).classList.add('highlighted');
       },
       _host_onKeydown: function(event) {
@@ -257,43 +269,43 @@
         Polymer.dom.flush();
       },
 
-      _itemsChanged: function(newValue, oldValue) {
+      _renderMenu: function(itemsSplices, value, itemView) {
         this._clearInsertPoint();
         var insertPoint = this.$.insertPoint;
-        var itemPrototype = document.createElement('div');
-        Polymer.dom(itemPrototype).classList.add('carbon-menu-item');
+        var itemPrototype = document.createElement('at-core-view');
         var ipDocumentFragmet = document.createDocumentFragment();
         var itemDiv;
+        var items = itemsSplices.base;
         var item;
+        var valueInItems = false;
 
         // new value is an array of title, name (value) pairs
-        for (var i = 0; i < newValue.length; i++) {
-          item = newValue[i];
+        for (var i = 0; i < items.length; i++) {
+          item = items[i];
           itemDiv = itemPrototype.cloneNode();
+          Polymer.dom(ipDocumentFragmet).appendChild(itemDiv);
+          Polymer.dom(itemDiv).classList.add('carbon-menu-item');
           Polymer.dom(itemDiv).setAttribute('carbon-menu-value', item.value);
-          Polymer.dom(itemDiv).textContent = item.title;
-          if (item.value === this.value) {
+          itemDiv.view = itemView;
+          itemDiv.value = item;
+          if (item.value === value) {
             Polymer.dom(itemDiv).classList.add('selected');
             Polymer.dom(itemDiv).classList.add('highlighted');
+            valueInItems = true;
           }
-          Polymer.dom(ipDocumentFragmet).appendChild(itemDiv);
-        }
-        Polymer.dom(insertPoint).appendChild(ipDocumentFragmet);
-        Polymer.dom.flush();
-      },
-      _valueChanged: function(newValue, oldValue) {
-        var insertPoint = this.$.insertPoint;
-        var selected = Polymer.dom(insertPoint).querySelector('.selected');
-        if (selected) {
-          Polymer.dom(selected).classList.remove('selected');
-          Polymer.dom(selected).classList.remove('highlighted');
         }
 
-        var toSelect = Polymer.dom(insertPoint).querySelector('div[carbon-menu-value=' + newValue + ']');
-        if (toSelect) {
-          Polymer.dom(toSelect).classList.add('selected');
-          Polymer.dom(toSelect).classList.add('highlighted');
+        Polymer.dom(insertPoint).appendChild(ipDocumentFragmet);
+        Polymer.dom.flush();
+
+        if (!valueInItems) {
+          this.value = "";
+          this._fireValueChangedEvent(this.value);
         }
+      },
+
+      _fireValueChangedEvent: function (newValue) {
+        this.fire('value-changed', { value: this.value }, { bubbles: false });
       }
     });
   </script>

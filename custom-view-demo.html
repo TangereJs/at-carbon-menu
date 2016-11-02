@@ -6,6 +6,7 @@
     <title>at-carbon-menu demo</title>
     <script src="../webcomponentsjs/webcomponents-lite.js" charset="utf-8"></script>
     <link rel="import" href="at-carbon-menu.html">
+    <link rel="import" href="../at-carbon-icon/at-carbon-icon.html">
   </head>
   <body>
     <div>
@@ -22,40 +23,34 @@
         <at-carbon-menu id="carbonMenu1"></at-carbon-menu>
       </div>
     </div>
-    <div>
-      <div>
-        <h4>at-carbon-menu demo</h4>
-      </div>
-      <div>
-        at-carbon-menu value echo: <span id="carbonMenu2Value"></span>
-      </div>
-      <div>
-        <at-carbon-menu id="carbonMenu2"></at-carbon-menu>
-      </div>
-    </div>
     <script>
       document.addEventListener('WebComponentsReady', function(event) {
         var carbonMenu1 = document.getElementById('carbonMenu1');
         var carbonMenu1Value = document.getElementById('carbonMenu1Value');
-        var carbonMenu2 = document.getElementById('carbonMenu2');
-        var carbonMenu2Value = document.getElementById('carbonMenu2Value');
 
         var menuItems = [{
           title: "Item 1",
-          value: "item1"
+          value: "item1",
+          iconName: "arrow-up"
         },{
           title: "Item 2",
-          value: "item2"
+          value: "item2",
+          iconName: "arrow-down"
         },{
           title: "Item 3",
-          value: "item3"
+          value: "item3",
+          iconName: "arrow-left"
         },{
           title: "Item 4",
-          value: "item4"
+          value: "item4",
+          iconName: "arrow-right"
         },{
           title: "Item 5",
-          value: "item5"
+          value: "item5",
+          iconName: "app"
         }];
+
+        carbonMenu1.itemView = '<div><at-carbon-icon icon="{{iconName}}"></at-carbon-icon>{{title}}</div>';
 
         carbonMenu1.items = menuItems;
         carbonMenu1.value = "item2";
@@ -72,27 +67,10 @@
           } else {
             carbonMenu1.push("items", {
               title: "Item 6",
-              value: "item6"
+              value: "item6",
+              iconName: "now:wrench"
             });
           }
-        });
-
-        menuItems = [{
-          title: "Pear",
-          value: "pear"
-        },{
-          title: "Apple",
-          value: "apple"
-        },{
-          title: "Watermellon",
-          value: "watermellon"
-        }];
-
-        carbonMenu2.items = menuItems;
-        carbonMenu2.value = "pear";
-        carbonMenu2Value.textContent = carbonMenu2.value;
-        carbonMenu2.addEventListener('value-changed', function(event) {
-          carbonMenu2Value.textContent = carbonMenu2.value;
         });
 
       });

@@ -4,6 +4,7 @@
   "dependencies": {
     "tangere": "TangereJs/tangere#0.8-preview",
     "at-theme": "TangereJs/at-theme#0.8-preview",
+    "at-core-view": "TangereJs/at-core-view#0.8-preview",
     "at-doc-viewer": "TangereJs/at-doc-viewer#0.8-preview"
   },
   "version": "0.0.0.1"
