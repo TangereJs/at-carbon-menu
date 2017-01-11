@@ -3,10 +3,10 @@
   "private": true,
   "version": "0.0.0.1",
   "dependencies": {
-    "tangere": "TangereJs/tangere#0.8-preview",
-    "at-theme": "TangereJs/at-theme#0.8-preview",
-    "at-core-view": "TangereJs/at-core-view#0.8-preview",
-    "at-doc-viewer": "TangereJs/at-doc-viewer#0.8-preview",
-    "at-carbon-icon": "TangereJs/at-carbon-icon#0.8-preview"
+    "tangere": "TangereJs/tangere#master",
+    "at-theme": "TangereJs/at-theme#master",
+    "at-core-view": "TangereJs/at-core-view#master",
+    "at-doc-viewer": "TangereJs/at-doc-viewer#master",
+    "at-carbon-icon": "TangereJs/at-carbon-icon#master"
   }
 }
