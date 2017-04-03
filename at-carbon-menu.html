@@ -69,6 +69,11 @@
                   type: String,
                   title: "Value",
                   "default": ""
+                },
+                icon: {
+                  type: String,
+                  title: "Icon",
+                  "default": "now:menu"
                 }
               }
             }
@@ -279,9 +284,19 @@
         var item;
         var valueInItems = false;
 
+        var itemsSchema = this.properties.items.schema.items.properties;
+
         // new value is an array of title, name (value) pairs
         for (var i = 0; i < items.length; i++) {
           item = items[i];
+
+          var itemsPropNames = Object.keys(itemsSchema);
+          itemsPropNames.forEach(function(propName, index){
+            if (item[propName] === undefined) {
+              item[propName] = itemsSchema[propName].default;
+            }
+          });
+
           itemDiv = itemPrototype.cloneNode();
           Polymer.dom(ipDocumentFragmet).appendChild(itemDiv);
           Polymer.dom(itemDiv).classList.add('carbon-menu-item');
