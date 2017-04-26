@@ -118,7 +118,7 @@
         this._initHighlighted();
       },
       _insertPoint_onTap: function (event) {
-        var highlighted = event.target.parentElement;
+        var highlighted = event.target;
         while(highlighted.nodeName !== "AT-CORE-VIEW") {
           highlighted = highlighted.parentElement;
         }
