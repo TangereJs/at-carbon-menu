@@ -119,6 +119,10 @@
       },
       _insertPoint_onTap: function (event) {
         var highlighted = event.target.parentElement;
+        while(highlighted.nodeName !== "AT-CORE-VIEW") {
+          highlighted = highlighted.parentElement;
+        }
+
         var attrValue = highlighted.getAttribute('carbon-menu-value');
         if (!attrValue) { return ; }
 
