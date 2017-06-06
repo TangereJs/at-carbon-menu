@@ -4,24 +4,23 @@
 
 <dom-module id="at-carbon-menu">
   <template>
-    <style include="at-form-common"></style>
-    <style>
-      :host {
+    <style include="at-form-common">
+       :host {
         display: block;
         box-sizing: border-box;
         -webkit-tap-highlight-color: transparent; /* this fixes tap flickering on iPad/iPhone*/
       }
 
-      :host:focus {
+       :host:focus {
         outline: none;
       }
 
       .carbon-menu-item {
+        @apply(--paper-font-body1);
         box-sizing: border-box;
         display: block;
         padding: 6px 12px;
         cursor: pointer;
-        @apply(--paper-font-body1);
       }
 
       .carbon-menu-item.highlighted {
@@ -32,29 +31,33 @@
       .carbon-menu-item.selected.highlighted {
         @apply(--at-text-primary-selected);
       }
-
-      #insertPoint:focus {
-        outline: none;
-      }
-
     </style>
 
-    <div id="insertPoint" on-tap="_insertPoint_onTap" on-mouseover="_insertPoint_onMouseover" tabindex="0"></div>
+    <template is="dom-repeat" items="{{items}}">
+      <at-core-view view="[[itemView]]" value="[[item]]" data-index$="[[index]]" class$="[[_computeMenuItemClassList(item)]]" on-tap="_handleItemOnTap" on-mouseenter="_handleItemOnMouseEnter" on-mouseleave="_handleItemOnMouseLeave"></at-core-view>
+    </template>
 
   </template>
   <script>
     'use strict';
     Polymer({
       is: 'at-carbon-menu',
-      listeners: {
-        'insertPoint.tap': '_host_onTap',
-        'insertPoint.keydown': '_host_onKeydown',
-        'insertPoint.focus': '_initHighlighted'
+
+      hostAttributes: {
+        tabindex: 0
       },
+
+      listeners: {
+        'keydown': '_host_onKeydown',
+        'focus': '_initHighlighted',
+        'blur': '_clearHighlighted'
+      },
+
       properties: {
+
         items: {
           type: Array,
-          value: function() {
+          value: function () {
             return [];
           },
           schema: {
@@ -80,10 +83,12 @@
           },
           xgridcols: "12"
         },
+
         value: {
           type: String,
           value: ""
         },
+
         itemView: {
           type: String,
           xtype: 'code',
@@ -91,10 +96,6 @@
           value: '<div>{{title}}</div>'
         }
       },
-
-      observers: [
-        '_renderMenu(items.*, value, itemView)'
-      ],
 
       _keyCodes: {
         ESC: 27,
@@ -104,62 +105,56 @@
         ENTER: 13,
         SPACE: 32
       },
-      ready: function() {
+
+      ready: function () {},
+
+      _computeMenuItemClassList: function (item) {
+        var classList = ['carbon-menu-item'];
+        if (item.value === this.value) {
+          classList.push('selected');
+        }
+
+        return classList.join(" ");
       },
-      _host_onTap: function(event) {
-        if (this._isEnterAsTap) {
-          this._isEnterAsTap = false;
-          return ;
+
+      _handleItemOnMouseEnter: function (event) {
+        var previous = this.querySelector('.highlighted');
+        if (previous) {
+          previous.classList.remove('highlighted');
         }
 
-        var itemsLen = this.items.length;
-        if (itemsLen < 1) { return; }
-
-        this._initHighlighted();
+        var current = event.currentTarget;
+        current.classList.add('highlighted');
       },
-      _insertPoint_onTap: function (event) {
-        var highlighted = event.target;
-        while(highlighted.nodeName !== "AT-CORE-VIEW") {
-          highlighted = highlighted.parentElement;
-        }
 
-        var attrValue = highlighted.getAttribute('carbon-menu-value');
-        if (!attrValue) { return ; }
-
-        var insertPoint = this.$.insertPoint;
-        var selected = Polymer.dom(insertPoint).querySelector('.selected');
-        if (selected) {
-          Polymer.dom(selected).classList.remove('selected');
-          Polymer.dom(selected).classList.remove('highlighted');
-        }
-
-        Polymer.dom(highlighted).classList.add('highlighted');
-        Polymer.dom(highlighted).classList.add('selected');
-
-        this.value = attrValue;
-        this._fireValueChangedEvent(this.value);
+      _handleItemOnMouseLeave: function (event) {
+        var current = event.currentTarget;
+        current.classList.remove('highlighted');
       },
-      _insertPoint_onMouseover: function (event) {
-        var insertPoint = this.$.insertPoint;
-        var highlighted = Polymer.dom(insertPoint).querySelector('.highlighted');
-        if (highlighted) {
-          Polymer.dom(highlighted).classList.remove('highlighted');
+
+      _handleItemOnTap: function (event) {
+        var previouslySelected = this.querySelector('.selected');
+        if (previouslySelected) {
+          previouslySelected.classList.remove('selected');
         }
 
-        var target = event.target;
-        if (target.is !== 'at-core-view') {
-          target = target.parentElement;
-        }
-        Polymer.dom(target).classList.add('highlighted');
+        var tapped = event.currentTarget;
+        tapped.classList.add('selected');
+
+        var indexInValue = tapped.getAttribute('data-index');
+        var item = this.items[indexInValue];
+
+        this.value = item.value;
+        this._fireValueChangedEvent(item.value);
       },
-      _host_onKeydown: function(event) {
+
+      _host_onKeydown: function (event) {
         var keyCodes = this._keyCodes;
         var keyCode = event.which;
 
         switch (keyCode) {
           case keyCodes.ENTER:
           case keyCodes.SPACE:
-            this._isEnterAsTap = true;
             this._select();
             break;
           case keyCodes.ESC:
@@ -176,154 +171,126 @@
             break;
         }
       },
-      _initHighlighted: function() {
-        var insertPoint = this.$.insertPoint;
 
-        var highlighted = Polymer.dom(insertPoint).querySelector('.highlighted');
-        if (highlighted) {
-          Polymer.dom(highlighted).classList.remove('highlighted');
-        }
+      _initHighlighted: function () {
+        var insertPoint = this;
 
-        var selected = Polymer.dom(insertPoint).querySelector('.selected');
-        if (!selected && !highlighted) {
-          var firstElemChild = Polymer.dom(insertPoint).firstElementChild;
-          if (firstElemChild) {
-            Polymer.dom(firstElemChild).classList.add('highlighted');
-            Polymer.dom(firstElemChild).classList.add('selected');
-          }
-        } else if (selected) {
-          Polymer.dom(selected).classList.add('highlighted');
+        // if selected exists return
+        var selected = insertPoint.querySelector('.selected');
+        if (selected) { return; }
+
+        // if highlighted exists return
+        var highlighted = insertPoint.querySelector('.highlighted');
+        if (highlighted) { return; }
+
+        // highlight first element
+        var firstElemChild = insertPoint.firstElementChild;
+        if (firstElemChild) {
+          Polymer.dom(firstElemChild).classList.add('highlighted');
         }
       },
-      _highlightPrevious: function() {
-        var insertPoint = this.$.insertPoint;
-        var highlighted = Polymer.dom(insertPoint).querySelector('.highlighted');
+
+      _clearHighlighted: function (event) {
+        var highlighted = this.querySelector('.highlighted');
         if (highlighted) {
-          Polymer.dom(highlighted).classList.remove('highlighted');
+          highlighted.classList.remove('highlighted');
+        }
+      },
+
+      _highlightPrevious: function () {
+        var insertPoint = this;
+        var highlighted = insertPoint.querySelector('.highlighted');
+
+        if (highlighted) {
           var prevElemSibling = Polymer.dom(highlighted).previousElementSibling;
           if (prevElemSibling) {
-            Polymer.dom(prevElemSibling).classList.add('highlighted');
+            var previousIndex = prevElemSibling.getAttribute('data-index');
+            if (previousIndex) {
+              Polymer.dom(highlighted).classList.remove('highlighted');
+              Polymer.dom(prevElemSibling).classList.add('highlighted');
+            }
           } else {
-            var lastElemChild = Polymer.dom(insertPoint).lastElementChild;
+            var lastElemChild = insertPoint.lastElementChild;
             if (lastElemChild) {
               Polymer.dom(lastElemChild).classList.add('highlighted');
             }
           }
         } else {
-          var selected = Polymer.dom(insertPoint).querySelector('.selected');
+          // if selected exists highlight next element after selected
+          var selected = this.querySelector('.selected');
           if (selected) {
             var prevElemSibling = Polymer.dom(selected).previousElementSibling;
             if (prevElemSibling) {
-              Polymer.dom(prevElemSibling).classList.add('highlighted');
-            } else {
-              var lastElemChild = Polymer.dom(insertPoint).lastElementChild;
-              if (lastElemChild) {
-                Polymer.dom(lastElemChild).classList.add('highlighted');
+              var nextIndex = prevElemSibling.getAttribute('data-index');
+              if (nextIndex) {
+                Polymer.dom(prevElemSibling).classList.add('highlighted');
               }
+            }
+          } else {
+            var lastElemChild = insertPoint.lastElementChild;
+            if (lastElemChild) {
+              Polymer.dom(lastElemChild).classList.add('highlighted');
             }
           }
         }
       },
-      _highlightNext: function() {
-        var insertPoint = this.$.insertPoint;
-        var highlighted = Polymer.dom(insertPoint).querySelector('.highlighted');
+
+      _highlightNext: function () {
+        var insertPoint = this;
+        var highlighted = insertPoint.querySelector('.highlighted');
+        var itemsLength = this.items.length;
+
         if (highlighted) {
-          Polymer.dom(highlighted).classList.remove('highlighted');
           var nextElemSibling = Polymer.dom(highlighted).nextElementSibling;
           if (nextElemSibling) {
-            Polymer.dom(nextElemSibling).classList.add('highlighted');
+            var nextIndex = nextElemSibling.getAttribute('data-index');
+            if (nextIndex) {
+              Polymer.dom(highlighted).classList.remove('highlighted');
+              Polymer.dom(nextElemSibling).classList.add('highlighted');
+            }
           } else {
-            var firstElemChild = Polymer.dom(insertPoint).firstElementChild;
+            var firstElemChild = insertPoint.firstElementChild;
             if (firstElemChild) {
               Polymer.dom(firstElemChild).classList.add('highlighted');
             }
           }
         } else {
-          var selected = Polymer.dom(insertPoint).querySelector('.selected');
+          // if selected exists highlight next element after selected
+          var selected = this.querySelector('.selected');
           if (selected) {
             var nextElemSibling = Polymer.dom(selected).nextElementSibling;
             if (nextElemSibling) {
-              Polymer.dom(nextElemSibling).classList.add('highlighted');
-            } else {
-              var firstElemChild = Polymer.dom(insertPoint).firstElementChild;
-              if (firstElemChild) {
-                Polymer.dom(firstElemChild).classList.add('highlighted');
+              var nextIndex = nextElemSibling.getAttribute('data-index');
+              if (nextIndex) {
+                Polymer.dom(nextElemSibling).classList.add('highlighted');
               }
+            }
+          } else {
+            var firstElemChild = insertPoint.firstElementChild;
+            if (firstElemChild) {
+              firstElemChild.classList.add('highlighted');
             }
           }
         }
       },
-      _select: function() {
-        var insertPoint = this.$.insertPoint;
-        var selected = Polymer.dom(insertPoint).querySelector('.selected');
+
+      _select: function () {
+        var insertPoint = this;
+
+        var highlighted = insertPoint.querySelector('.highlighted');
+        if (!highlighted) { return; }
+
+        var selected = insertPoint.querySelector('.selected');
         if (selected) {
           Polymer.dom(selected).classList.remove('selected');
         }
+        
+        Polymer.dom(highlighted).classList.add('selected');
 
-        var highlighted = Polymer.dom(insertPoint).querySelector('.highlighted');
-        if (highlighted) {
-          Polymer.dom(highlighted).classList.add('selected');
-
-          this.value = highlighted.getAttribute('carbon-menu-value');
-          this.fire('value-changed', { value: this.value });
-        }
-
-      },
-      _clearInsertPoint: function() {
-        var insertPoint = this.$.insertPoint;
-        var firstChild = Polymer.dom(insertPoint).firstChild;
-
-        while (firstChild) {
-          Polymer.dom(insertPoint).removeChild(firstChild);
-          firstChild = Polymer.dom(insertPoint).firstChild;
-        }
-
-        Polymer.dom.flush();
-      },
-
-      _renderMenu: function(itemsSplices, value, itemView) {
-        this._clearInsertPoint();
-        var insertPoint = this.$.insertPoint;
-        var itemPrototype = document.createElement('at-core-view');
-        var ipDocumentFragmet = document.createDocumentFragment();
-        var itemDiv;
-        var items = itemsSplices.base;
-        var item;
-        var valueInItems = false;
-
-        var itemsSchema = this.properties.items.schema.items.properties;
-
-        // new value is an array of title, name (value) pairs
-        for (var i = 0; i < items.length; i++) {
-          item = items[i];
-
-          var itemsPropNames = Object.keys(itemsSchema);
-          itemsPropNames.forEach(function(propName, index){
-            if (item[propName] === undefined) {
-              item[propName] = itemsSchema[propName].default;
-            }
-          });
-
-          itemDiv = itemPrototype.cloneNode();
-          Polymer.dom(ipDocumentFragmet).appendChild(itemDiv);
-          Polymer.dom(itemDiv).classList.add('carbon-menu-item');
-          Polymer.dom(itemDiv).setAttribute('carbon-menu-value', item.value);
-          itemDiv.view = itemView;
-          itemDiv.value = item;
-          if (item.value === value) {
-            Polymer.dom(itemDiv).classList.add('selected');
-            Polymer.dom(itemDiv).classList.add('highlighted');
-            valueInItems = true;
-          }
-        }
-
-        Polymer.dom(insertPoint).appendChild(ipDocumentFragmet);
-        Polymer.dom.flush();
-
-        if (!valueInItems) {
-          this.value = "";
-          this._fireValueChangedEvent(this.value);
-        }
+        var itemIndex = highlighted.getAttribute('data-index');
+        var item = this.items[itemIndex];
+        this.value = item.value;
+        this._fireValueChangedEvent(this.value);        
       },
 
       _fireValueChangedEvent: function (newValue) {
