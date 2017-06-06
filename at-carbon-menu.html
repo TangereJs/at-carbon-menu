@@ -86,7 +86,8 @@
 
         value: {
           type: String,
-          value: ""
+          value: "",
+          observer: '_valueChanged'
         },
 
         itemView: {
@@ -291,6 +292,42 @@
         var item = this.items[itemIndex];
         this.value = item.value;
         this._fireValueChangedEvent(this.value);        
+      },
+
+      _valueChanged: function(newValue, oldValue) {
+        function isString(obj) {
+          return Object.prototype.toString.apply(obj) === "[object String]";
+        }
+
+        if (!isString(newValue)) { return; }
+
+        if (newValue === "") {
+          // clear currently selected
+          var selected = this.querySelector('.selected');
+          if (selected) {
+            Polymer.dom(selected).classList.remove('selected');
+          }  
+        } else {
+          var selectedIndex = -1;
+          for (var i = 0; i < this.items.length; i++) {
+            var item = this.items[i];
+            if (item.value === newValue) {
+              selectedIndex = i;
+              break;
+            }
+          }
+          if (selectedIndex > -1) {
+            var newSelected = this.querySelector('[data-index="'+selectedIndex+'"]');
+            if (newSelected) {
+              // clear previosly selected 
+              var selected = this.querySelector('.selected');
+              if (selected) {
+                Polymer.dom(selected).classList.remove('selected');
+              }
+              newSelected.classList.add('selected');
+            }
+          }          
+        }
       },
 
       _fireValueChangedEvent: function (newValue) {
