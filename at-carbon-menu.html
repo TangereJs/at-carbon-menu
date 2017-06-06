@@ -23,6 +23,11 @@
         cursor: pointer;
       }
 
+      .carbon-menu-item[disabled] {
+        @apply(--at-form-disabled);
+        pointer-events: none;
+      }
+
       .carbon-menu-item.highlighted {
         @apply(--at-text-selected);
       }
@@ -34,7 +39,7 @@
     </style>
 
     <template is="dom-repeat" items="{{items}}">
-      <at-core-view view="[[itemView]]" value="[[item]]" data-index$="[[index]]" class$="[[_computeMenuItemClassList(item)]]" on-tap="_handleItemOnTap" on-mouseenter="_handleItemOnMouseEnter" on-mouseleave="_handleItemOnMouseLeave"></at-core-view>
+      <at-core-view view="[[itemView]]" value="[[item]]" data-index$="[[index]]" class$="[[_computeMenuItemClassList(item)]]" on-tap="_handleItemOnTap" on-mouseenter="_handleItemOnMouseEnter" on-mouseleave="_handleItemOnMouseLeave" disabled$="[[item.disabled]]"></at-core-view>
     </template>
 
   </template>
@@ -77,6 +82,11 @@
                   type: String,
                   title: "Icon",
                   "default": ""
+                },
+                disabled: {
+                  type: Boolean,
+                  title: "Disabled",
+                  "default": false
                 }
               }
             }
@@ -187,7 +197,15 @@
         // highlight first element
         var firstElemChild = insertPoint.firstElementChild;
         if (firstElemChild) {
-          Polymer.dom(firstElemChild).classList.add('highlighted');
+
+          if (firstElemChild.hasAttribute('disabled')) {
+            var nextSibling = this._getSiblingFor(firstElemChild, 1);
+            if (nextSibling) {
+              Polymer.dom(nextSibling).classList.add('highlighted');
+            }
+          } else {
+            Polymer.dom(firstElemChild).classList.add('highlighted');
+          }
         }
       },
 
@@ -198,36 +216,50 @@
         }
       },
 
+      /**
+       * target is element for which we want to find sibling for
+       * direction is 1 for next sibling, -1 for previous sibling
+       */
+      _getSiblingFor: function (target, direction) {
+        var result = null;
+        if (!target) { return result; }
+        result = target;
+        var siblingFound = false;
+
+        while (!siblingFound && result) {
+          result = direction > 0 ? result.nextElementSibling : result.previousElementSibling;
+          if (result) {
+            var dataIndexAttr = result.getAttribute('data-index');
+            var isDisabled = result.hasAttribute('disabled');
+
+            siblingFound = dataIndexAttr && !isDisabled;
+          }
+        }
+
+        return result;
+      },
+
       _highlightPrevious: function () {
         var insertPoint = this;
         var highlighted = insertPoint.querySelector('.highlighted');
 
         if (highlighted) {
-          var prevElemSibling = Polymer.dom(highlighted).previousElementSibling;
+          var prevElemSibling = this._getSiblingFor(highlighted, -1);
           if (prevElemSibling) {
-            var previousIndex = prevElemSibling.getAttribute('data-index');
-            if (previousIndex) {
-              Polymer.dom(highlighted).classList.remove('highlighted');
-              Polymer.dom(prevElemSibling).classList.add('highlighted');
-            }
-          } else {
-            var lastElemChild = insertPoint.lastElementChild;
-            if (lastElemChild) {
-              Polymer.dom(lastElemChild).classList.add('highlighted');
-            }
+            Polymer.dom(highlighted).classList.remove('highlighted');
+            Polymer.dom(prevElemSibling).classList.add('highlighted');
           }
         } else {
           // if selected exists highlight next element after selected
           var selected = this.querySelector('.selected');
           if (selected) {
-            var prevElemSibling = Polymer.dom(selected).previousElementSibling;
+            var prevElemSibling = this._getSiblingFor(selected, -1);
             if (prevElemSibling) {
-              var nextIndex = prevElemSibling.getAttribute('data-index');
-              if (nextIndex) {
-                Polymer.dom(prevElemSibling).classList.add('highlighted');
-              }
+              Polymer.dom(prevElemSibling).classList.add('highlighted');
             }
           } else {
+            // TODO: lastElemChild can be disabled
+            // @Debug: Is this code ever executed?
             var lastElemChild = insertPoint.lastElementChild;
             if (lastElemChild) {
               Polymer.dom(lastElemChild).classList.add('highlighted');
@@ -242,31 +274,22 @@
         var itemsLength = this.items.length;
 
         if (highlighted) {
-          var nextElemSibling = Polymer.dom(highlighted).nextElementSibling;
+          var nextElemSibling = this._getSiblingFor(highlighted, 1);
           if (nextElemSibling) {
-            var nextIndex = nextElemSibling.getAttribute('data-index');
-            if (nextIndex) {
-              Polymer.dom(highlighted).classList.remove('highlighted');
-              Polymer.dom(nextElemSibling).classList.add('highlighted');
-            }
-          } else {
-            var firstElemChild = insertPoint.firstElementChild;
-            if (firstElemChild) {
-              Polymer.dom(firstElemChild).classList.add('highlighted');
-            }
+            Polymer.dom(highlighted).classList.remove('highlighted');
+            Polymer.dom(nextElemSibling).classList.add('highlighted');
           }
         } else {
           // if selected exists highlight next element after selected
           var selected = this.querySelector('.selected');
           if (selected) {
-            var nextElemSibling = Polymer.dom(selected).nextElementSibling;
+            var nextElemSibling = this._getSiblingFor(selected, 1);
             if (nextElemSibling) {
-              var nextIndex = nextElemSibling.getAttribute('data-index');
-              if (nextIndex) {
-                Polymer.dom(nextElemSibling).classList.add('highlighted');
-              }
+              Polymer.dom(nextElemSibling).classList.add('highlighted');
             }
           } else {
+            // TODO: firstElemChild can be disabled
+            // @Debug: Is this code ever executed?
             var firstElemChild = insertPoint.firstElementChild;
             if (firstElemChild) {
               firstElemChild.classList.add('highlighted');
@@ -285,16 +308,16 @@
         if (selected) {
           Polymer.dom(selected).classList.remove('selected');
         }
-        
+
         Polymer.dom(highlighted).classList.add('selected');
 
         var itemIndex = highlighted.getAttribute('data-index');
         var item = this.items[itemIndex];
         this.value = item.value;
-        this._fireValueChangedEvent(this.value);        
+        this._fireValueChangedEvent(this.value);
       },
 
-      _valueChanged: function(newValue, oldValue) {
+      _valueChanged: function (newValue, oldValue) {
         function isString(obj) {
           return Object.prototype.toString.apply(obj) === "[object String]";
         }
@@ -306,7 +329,7 @@
           var selected = this.querySelector('.selected');
           if (selected) {
             Polymer.dom(selected).classList.remove('selected');
-          }  
+          }
         } else {
           var selectedIndex = -1;
           for (var i = 0; i < this.items.length; i++) {
@@ -317,7 +340,7 @@
             }
           }
           if (selectedIndex > -1) {
-            var newSelected = this.querySelector('[data-index="'+selectedIndex+'"]');
+            var newSelected = this.querySelector('[data-index="' + selectedIndex + '"]');
             if (newSelected) {
               // clear previosly selected 
               var selected = this.querySelector('.selected');
@@ -326,7 +349,7 @@
               }
               newSelected.classList.add('selected');
             }
-          }          
+          }
         }
       },
 
