@@ -87,6 +87,11 @@
                   type: Boolean,
                   title: "Disabled",
                   "default": false
+                },
+                class: {
+                  type: String,
+                  title: 'CSS Class',
+                  "default": ''
                 }
               }
             }
@@ -121,10 +126,15 @@
 
       _computeMenuItemClassList: function (item) {
         var classList = ['carbon-menu-item'];
+        
         if (item.value === this.value) {
           classList.push('selected');
         }
-
+        
+        if (item.class) {
+          classList.push(item.class);
+        }
+        
         return classList.join(" ");
       },
 
