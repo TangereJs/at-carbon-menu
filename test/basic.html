@@ -1,0 +1,612 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>at-carbon-menu tests</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
+  <link rel="import" href="../at-carbon-menu.html">
+  <link rel="import" href="../../iron-test-helpers/iron-test-helpers.html" />
+</head>
+
+<body>
+  <test-fixture id="initial">
+    <template>
+      <at-carbon-menu></at-carbon-menu>
+    </template>
+  </test-fixture>
+
+  <!-- 
+      items fixtures 
+    -->
+  <test-fixture id="itemsIsUndefined">
+    <template>
+      <at-carbon-menu items="undefined"></at-carbon-menu>
+    </template>
+  </test-fixture>
+  <test-fixture id="itemsIsNull">
+    <template>
+      <at-carbon-menu items="null"></at-carbon-menu>
+    </template>
+  </test-fixture>
+  <test-fixture id="itemsIsTrue">
+    <template>
+      <at-carbon-menu items="true"></at-carbon-menu>
+    </template>
+  </test-fixture>
+  <test-fixture id="itemsIsFalse">
+    <template>
+      <at-carbon-menu items="false"></at-carbon-menu>
+    </template>
+  </test-fixture>
+  <test-fixture id="itemsIs-42">
+    <template>
+      <at-carbon-menu items="-42"></at-carbon-menu>
+    </template>
+  </test-fixture>
+  <test-fixture id="itemsIs0">
+    <template>
+      <at-carbon-menu items="0"></at-carbon-menu>
+    </template>
+  </test-fixture>
+  <test-fixture id="itemsIs42">
+    <template>
+      <at-carbon-menu items="42"></at-carbon-menu>
+    </template>
+  </test-fixture>
+  <test-fixture id="itemsIsEmpty">
+    <template>
+      <at-carbon-menu items=""></at-carbon-menu>
+    </template>
+  </test-fixture>
+  <test-fixture id="itemsIsLorem_ipsum">
+    <template>
+      <at-carbon-menu items="lorem ipsum"></at-carbon-menu>
+    </template>
+  </test-fixture>
+  <test-fixture id="itemsIs{}">
+    <template>
+      <at-carbon-menu items="{}"></at-carbon-menu>
+    </template>
+  </test-fixture>
+  <test-fixture id="itemsIs[]">
+    <template>
+      <at-carbon-menu items="[]"></at-carbon-menu>
+    </template>
+  </test-fixture>
+  <test-fixture id="itemsIsFunction">
+    <template>
+      <at-carbon-menu items="function f() { return undefined; }"></at-carbon-menu>
+    </template>
+  </test-fixture>
+
+  <!-- 
+      value fixtures 
+    -->
+  <test-fixture id="valueIsUndefined">
+    <template>
+      <at-carbon-menu value="undefined"></at-carbon-menu>
+    </template>
+  </test-fixture>
+  <test-fixture id="valueIsNull">
+    <template>
+      <at-carbon-menu value="null"></at-carbon-menu>
+    </template>
+  </test-fixture>
+  <test-fixture id="valueIsTrue">
+    <template>
+      <at-carbon-menu value="true"></at-carbon-menu>
+    </template>
+  </test-fixture>
+  <test-fixture id="valueIsFalse">
+    <template>
+      <at-carbon-menu value="false"></at-carbon-menu>
+    </template>
+  </test-fixture>
+  <test-fixture id="valueIs-42">
+    <template>
+      <at-carbon-menu value="-42"></at-carbon-menu>
+    </template>
+  </test-fixture>
+  <test-fixture id="valueIs0">
+    <template>
+      <at-carbon-menu value="0"></at-carbon-menu>
+    </template>
+  </test-fixture>
+  <test-fixture id="valueIs42">
+    <template>
+      <at-carbon-menu value="42"></at-carbon-menu>
+    </template>
+  </test-fixture>
+  <test-fixture id="valueIsEmpty">
+    <template>
+      <at-carbon-menu value=""></at-carbon-menu>
+    </template>
+  </test-fixture>
+  <test-fixture id="valueIsLorem_ipsum">
+    <template>
+      <at-carbon-menu value="lorem ipsum"></at-carbon-menu>
+    </template>
+  </test-fixture>
+  <test-fixture id="valueIs{}">
+    <template>
+      <at-carbon-menu value="{}"></at-carbon-menu>
+    </template>
+  </test-fixture>
+  <test-fixture id="valueIs[]">
+    <template>
+      <at-carbon-menu value="[]"></at-carbon-menu>
+    </template>
+  </test-fixture>
+  <test-fixture id="valueIsFunction">
+    <template>
+      <at-carbon-menu value="function f() { return undefined; }"></at-carbon-menu>
+    </template>
+  </test-fixture>
+
+  <!-- 
+      itemView fixtures 
+    -->
+  <test-fixture id="itemViewIsUndefined">
+    <template>
+      <at-carbon-menu item-view="undefined"></at-carbon-menu>
+    </template>
+  </test-fixture>
+  <test-fixture id="itemViewIsNull">
+    <template>
+      <at-carbon-menu item-view="null"></at-carbon-menu>
+    </template>
+  </test-fixture>
+  <test-fixture id="itemViewIsTrue">
+    <template>
+      <at-carbon-menu item-view="true"></at-carbon-menu>
+    </template>
+  </test-fixture>
+  <test-fixture id="itemViewIsFalse">
+    <template>
+      <at-carbon-menu item-view="false"></at-carbon-menu>
+    </template>
+  </test-fixture>
+  <test-fixture id="itemViewIs-42">
+    <template>
+      <at-carbon-menu item-view="-42"></at-carbon-menu>
+    </template>
+  </test-fixture>
+  <test-fixture id="itemViewIs0">
+    <template>
+      <at-carbon-menu item-view="0"></at-carbon-menu>
+    </template>
+  </test-fixture>
+  <test-fixture id="itemViewIs42">
+    <template>
+      <at-carbon-menu item-view="42"></at-carbon-menu>
+    </template>
+  </test-fixture>
+  <test-fixture id="itemViewIsEmpty">
+    <template>
+      <at-carbon-menu item-view=""></at-carbon-menu>
+    </template>
+  </test-fixture>
+  <test-fixture id="itemViewIsLorem_ipsum">
+    <template>
+      <at-carbon-menu item-view="lorem ipsum"></at-carbon-menu>
+    </template>
+  </test-fixture>
+  <test-fixture id="itemViewIs{}">
+    <template>
+      <at-carbon-menu item-view="{}"></at-carbon-menu>
+    </template>
+  </test-fixture>
+  <test-fixture id="itemViewIs[]">
+    <template>
+      <at-carbon-menu item-view="[]"></at-carbon-menu>
+    </template>
+  </test-fixture>
+  <test-fixture id="itemViewIsFunction">
+    <template>
+      <at-carbon-menu item-view="function f() { return undefined; }"></at-carbon-menu>
+    </template>
+  </test-fixture>
+
+
+  <script>
+    suite('initial value tests', function() {
+      test('initial value', function() {
+        var elt = fixture('initial');
+
+        assert.deepEqual(elt.items, []);
+        assert.equal(elt.value, "");
+        assert.equal(elt.itemView, "<div>{{title}}</div>");
+      });
+    });
+
+    // 
+    // items attribute tests
+    // 
+    suite("items attribute tests", function() {
+      test('items is undefined', function() {
+        var elt = fixture('itemsIsUndefined');
+
+        // "undefined" is converted to null
+        assert.equal(elt.items, null);
+        assert.equal(elt.value, "");
+        assert.equal(elt.itemView, "<div>{{title}}</div>");
+      });
+
+      test('items is null', function() {
+        var elt = fixture('itemsIsNull');
+
+        // "null" is converted to null
+        assert.equal(elt.items, null);
+        assert.equal(elt.value, "");
+        assert.equal(elt.itemView, "<div>{{title}}</div>");
+      });
+
+      test('items is true', function() {
+        var elt = fixture('itemsIsTrue');
+
+        assert.equal(elt.items, true);
+        assert.equal(elt.value, "");
+        assert.equal(elt.itemView, "<div>{{title}}</div>");
+      });
+
+      test('items is false', function() {
+        var elt = fixture('itemsIsFalse');
+
+        assert.equal(elt.items, false);
+        assert.equal(elt.value, "");
+        assert.equal(elt.itemView, "<div>{{title}}</div>");
+      });
+
+      test('items is -42', function() {
+        var elt = fixture('itemsIs-42');
+
+        assert.equal(elt.items, "-42");
+        assert.equal(elt.value, "");
+        assert.equal(elt.itemView, "<div>{{title}}</div>");
+      });
+
+      test('items is 0', function() {
+        var elt = fixture('itemsIs0');
+
+        assert.equal(elt.items, "0");
+        assert.equal(elt.value, "");
+        assert.equal(elt.itemView, "<div>{{title}}</div>");
+      });
+
+      test('items is 42', function() {
+        var elt = fixture('itemsIs42');
+
+        assert.equal(elt.items, "42");
+        assert.equal(elt.value, "");
+        assert.equal(elt.itemView, "<div>{{title}}</div>");
+      });
+
+      test('items is empty', function() {
+        var elt = fixture('itemsIsEmpty');
+
+        // "" is converted to null
+        assert.equal(elt.items, null);
+        assert.equal(elt.value, "");
+        assert.equal(elt.itemView, "<div>{{title}}</div>");
+      });
+
+      test('items is lorem ipsum', function() {
+        var elt = fixture('itemsIsLorem_ipsum');
+
+        // "lorem ipsum" is converted to null
+        assert.equal(elt.items, null);
+        assert.equal(elt.value, "");
+        assert.equal(elt.itemView, "<div>{{title}}</div>");
+      });
+
+      test('items is {}', function() {
+        var elt = fixture('itemsIs{}');
+
+        assert.deepEqual(elt.items, {});
+        assert.equal(elt.value, "");
+        assert.equal(elt.itemView, "<div>{{title}}</div>");
+      });
+
+      test('items is []', function() {
+        var elt = fixture('itemsIs[]');
+
+        assert.deepEqual(elt.items, []);
+        assert.equal(elt.value, "");
+        assert.equal(elt.itemView, "<div>{{title}}</div>");
+      });
+
+      test('items is function', function() {
+        var elt = fixture('itemsIsFunction');
+
+        // "function f() { return undefined; }" is converted to null
+        assert.equal(elt.items, null);
+        assert.equal(elt.value, "");
+        assert.equal(elt.itemView, "<div>{{title}}</div>");
+      });
+    });
+
+    // 
+    // value attribute tests
+    // 
+    suite("value attribute tests", function() {
+      test('value is undefined', function() {
+        var elt = fixture('valueIsUndefined');
+
+        assert.deepEqual(elt.items, []);
+        assert.equal(elt.value, "undefined");
+        assert.equal(elt.itemView, "<div>{{title}}</div>");
+      });
+
+      test('value is null', function() {
+        var elt = fixture('valueIsNull');
+
+        assert.deepEqual(elt.items, []);
+        assert.equal(elt.value, "null");
+        assert.equal(elt.itemView, "<div>{{title}}</div>");
+      });
+
+      test('value is true', function() {
+        var elt = fixture('valueIsTrue');
+
+        assert.deepEqual(elt.items, []);
+        assert.equal(elt.value, "true");
+        assert.equal(elt.itemView, "<div>{{title}}</div>");
+      });
+
+      test('value is false', function() {
+        var elt = fixture('valueIsFalse');
+
+        assert.deepEqual(elt.items, []);
+        assert.equal(elt.value, "false");
+        assert.equal(elt.itemView, "<div>{{title}}</div>");
+      });
+
+      test('value is -42', function() {
+        var elt = fixture('valueIs-42');
+
+        assert.deepEqual(elt.items, []);
+        assert.equal(elt.value, "-42");
+        assert.equal(elt.itemView, "<div>{{title}}</div>");
+      });
+
+      test('value is 0', function() {
+        var elt = fixture('valueIs0');
+
+        assert.deepEqual(elt.items, []);
+        assert.equal(elt.value, "0");
+        assert.equal(elt.itemView, "<div>{{title}}</div>");
+      });
+
+      test('value is 42', function() {
+        var elt = fixture('valueIs42');
+
+        assert.deepEqual(elt.items, []);
+        assert.equal(elt.value, "42");
+        assert.equal(elt.itemView, "<div>{{title}}</div>");
+      });
+
+      test('value is empty', function() {
+        var elt = fixture('valueIsEmpty');
+
+        assert.deepEqual(elt.items, []);
+        assert.deepEqual(elt.value, "");
+        assert.equal(elt.itemView, "<div>{{title}}</div>");
+      });
+
+      test('value is lorem ipsum', function() {
+        var elt = fixture('valueIsLorem_ipsum');
+
+        assert.deepEqual(elt.items, []);
+        assert.equal(elt.value, "lorem ipsum");
+        assert.equal(elt.itemView, "<div>{{title}}</div>");
+      });
+
+      test('value is {}', function() {
+        var elt = fixture('valueIs{}');
+
+        assert.deepEqual(elt.items, []);
+        assert.equal(elt.value, "{}");
+        assert.equal(elt.itemView, "<div>{{title}}</div>");
+      });
+
+      test('value is []', function() {
+        var elt = fixture('valueIs[]');
+
+        assert.deepEqual(elt.items, []);
+        assert.equal(elt.value, "[]");
+        assert.equal(elt.itemView, "<div>{{title}}</div>");
+      });
+
+      test('value is function', function() {
+        var elt = fixture('valueIsFunction');
+
+        assert.deepEqual(elt.items, []);
+        assert.equal(elt.value, "function f() { return undefined; }");
+        assert.equal(elt.itemView, "<div>{{title}}</div>");
+      });
+    });
+
+    // 
+    // itemView attribute tests
+    // 
+    suite("itemView attribute tests", function() {
+      test('itemView is undefined', function() {
+        var elt = fixture('itemViewIsUndefined');
+
+        assert.deepEqual(elt.items, []);
+        assert.equal(elt.value, "");
+        assert.equal(elt.itemView, "undefined");
+      });
+
+      test('itemView is null', function() {
+        var elt = fixture('itemViewIsNull');
+
+        assert.deepEqual(elt.items, []);
+        assert.equal(elt.value, "");
+        assert.equal(elt.itemView, "null");
+      });
+
+      test('itemView is true', function() {
+        var elt = fixture('itemViewIsTrue');
+
+        assert.deepEqual(elt.items, []);
+        assert.equal(elt.value, "");
+        assert.equal(elt.itemView, "true");
+      });
+
+      test('itemView is false', function() {
+        var elt = fixture('itemViewIsFalse');
+
+        assert.deepEqual(elt.items, []);
+        assert.equal(elt.value, "");
+        assert.equal(elt.itemView, "false");
+      });
+
+      test('itemView is -42', function() {
+        var elt = fixture('itemViewIs-42');
+
+        assert.deepEqual(elt.items, []);
+        assert.equal(elt.value, "");
+        assert.equal(elt.itemView, "-42");
+      });
+
+      test('itemView is 0', function() {
+        var elt = fixture('itemViewIs0');
+
+        assert.deepEqual(elt.items, []);
+        assert.equal(elt.value, "");
+        assert.equal(elt.itemView, "0");
+      });
+
+      test('itemView is 42', function() {
+        var elt = fixture('itemViewIs42');
+
+        assert.deepEqual(elt.items, []);
+        assert.equal(elt.value, "");
+        assert.equal(elt.itemView, "42");
+      });
+
+      test('itemView is empty', function() {
+        var elt = fixture('itemViewIsEmpty');
+
+        assert.deepEqual(elt.items, []);
+        assert.equal(elt.value, "");
+        assert.deepEqual(elt.itemView, '');
+      });
+
+      test('itemView is lorem ipsum', function() {
+        var elt = fixture('itemViewIsLorem_ipsum');
+
+        assert.deepEqual(elt.items, []);
+        assert.equal(elt.value, "");
+        assert.equal(elt.itemView, "lorem ipsum");
+      });
+
+      test('itemView is {}', function() {
+        var elt = fixture('itemViewIs{}');
+
+        assert.deepEqual(elt.items, []);
+        assert.equal(elt.value, "");
+        assert.equal(elt.itemView, "{}");
+      });
+
+      test('itemView is []', function() {
+        var elt = fixture('itemViewIs[]');
+
+        assert.deepEqual(elt.items, []);
+        assert.equal(elt.value, "");
+        assert.equal(elt.itemView, "[]");
+      });
+
+      test('itemView is function', function() {
+        var elt = fixture('itemViewIsFunction');
+
+        assert.deepEqual(elt.items, []);
+        assert.equal(elt.value, "");
+        assert.equal(elt.itemView, "function f() { return undefined; }");
+      });
+    });
+
+
+    suite("tests where properties are set as in code", function() {
+
+      test('invalid items values', function() {
+        var elt = fixture('initial');
+
+        var actValues = [
+          "undefined", "null", "true", "false", "-42", "0", "42", "", "lorem ipsum", "{}", "[]", "function f() { return undefined; }",
+          undefined, null, true, false, -42, 0, 42, {}, []
+        ];
+
+        var expValues = [
+          "undefined", "null", "true", "false", "-42", "0", "42", "", "lorem ipsum", "{}", "[]", "function f() { return undefined; }",
+          undefined, null, true, false, -42, 0, 42, {}, []
+        ];
+
+        for (var i = 0; i < actValues.length; i++) {
+          var actValue = actValues[i];
+          var expValue = expValues[i];
+
+          elt.items = actValue;
+          assert.deepEqual(elt.items, expValue);
+          assert.deepEqual(elt.value, "");
+          assert.deepEqual(elt.itemView, "<div>{{title}}</div>");
+        }
+      });
+
+      test('invalid value values', function() {
+        var elt = fixture('initial');
+
+        var actValues = [
+          "undefined", "null", "true", "false", "-42", "0", "42", "", "lorem ipsum", "{}", "[]", "function f() { return undefined; }",
+          undefined, null, true, false, -42, 0, 42, {}, []
+        ];
+
+        var expValues = [
+          "undefined", "null", "true", "false", "-42", "0", "42", "", "lorem ipsum", "{}", "[]", "function f() { return undefined; }",
+          undefined, null, true, false, -42, 0, 42, {}, []
+        ];
+
+        for (var i = 0; i < actValues.length; i++) {
+          var actValue = actValues[i];
+          var expValue = expValues[i];
+
+          elt.value = actValue;
+          assert.deepEqual(elt.items, []);
+          assert.deepEqual(elt.value, expValue);
+          assert.deepEqual(elt.itemView, "<div>{{title}}</div>");
+        }
+      });
+
+      test('invalid itemView values', function() {
+        var elt = fixture('initial');
+
+        var actValues = [
+          "undefined", "null", "true", "false", "-42", "0", "42", "", "lorem ipsum", "{}", "[]", "function f() { return undefined; }",
+          undefined, null, true, false, -42, 0, 42, {}, []
+        ];
+
+        var expValues = [
+          "undefined", "null", "true", "false", "-42", "0", "42", "", "lorem ipsum", "{}", "[]", "function f() { return undefined; }",
+          undefined, null, true, false, -42, 0, 42, {}, []
+        ];
+
+        for (var i = 0; i < actValues.length; i++) {
+          var actValue = actValues[i];
+          var expValue = expValues[i];
+
+          elt.itemView = actValue;
+          assert.deepEqual(elt.items, []);
+          assert.deepEqual(elt.value, "");
+          assert.deepEqual(elt.itemView, expValue);
+        }
+      });
+
+    });
+  </script>
+</body>
+
+</html>

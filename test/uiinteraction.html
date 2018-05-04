@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <title>at-carbon-menu tests</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
+  <link rel="import" href="../at-carbon-menu.html">
+  <link rel="import" href="../../iron-test-helpers/iron-test-helpers.html" />
+</head>
+
+<body>
+  <test-fixture id="initial">
+    <template>
+      <at-carbon-menu></at-carbon-menu>
+    </template>
+  </test-fixture>
+
+  <script>
+    suite('uiinteraction tests', function() {
+      test('uiinteraction', function() {
+        var elt = fixture('initial');
+
+        assert.deepEqual(elt.items, []);
+        assert.equal(elt.value, "");
+        assert.equal(elt.itemView, "<div>{{title}}</div>");
+
+        // no items in UI
+
+        // set items to non empty array
+
+        // items are set in UI
+
+        // set items to []
+
+        // no items in UI
+
+        // set items to non empty array
+        // set value to value from array
+        
+        // confirm that item is selected
+
+        // set value to value to empty
+
+        // confirm that item is not selected
+
+        // set value to value from array
+        // confirm that item is selected
+        
+        // set value to value to another from array
+        // confirm that new item is selected
+
+      });
+    });
+  </script>
+</body>
+
+</html>

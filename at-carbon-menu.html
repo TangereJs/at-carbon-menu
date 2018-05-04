@@ -38,7 +38,7 @@
       }
     </style>
 
-    <template is="dom-repeat" items="{{items}}">
+    <template is="dom-repeat" items="[[_items]]">
       <at-core-view view="[[itemView]]" value="[[item]]" data-index$="[[index]]" class$="[[_computeMenuItemClassList(item)]]" on-tap="_handleItemOnTap" on-mouseenter="_handleItemOnMouseEnter" on-mouseleave="_handleItemOnMouseLeave" disabled$="[[item.disabled]]"></at-core-view>
     </template>
 
@@ -99,6 +99,13 @@
           xgridcols: "12"
         },
 
+        _items: {
+          type: Array,
+          value: function () {
+            return [];
+          },
+        },
+
         value: {
           type: String,
           value: "",
@@ -121,6 +128,10 @@
         ENTER: 13,
         SPACE: 32
       },
+
+      observers: [
+        '_itemsChanged(items.*)'
+      ],
 
       ready: function () {},
 
@@ -326,13 +337,15 @@
         this.value = item.value;
         this._fireValueChangedEvent(this.value);
       },
+      
+      _itemsChanged: function(itemsSplices) {
+        this._items = [];
+        if (!this._isArray(itemsSplices.base)) return;
+        this._items = itemsSplices.base;
+      },
 
       _valueChanged: function (newValue, oldValue) {
-        function isString(obj) {
-          return Object.prototype.toString.apply(obj) === "[object String]";
-        }
-
-        if (!isString(newValue)) { return; }
+        if (!this._isString(newValue)) { return; }
 
         if (newValue === "") {
           // clear currently selected
@@ -340,6 +353,7 @@
           if (selected) {
             Polymer.dom(selected).classList.remove('selected');
           }
+        
         } else {
           var selectedIndex = -1;
           for (var i = 0; i < this.items.length; i++) {
@@ -362,6 +376,9 @@
           }
         }
       },
+
+      _isString: function(obj) { return Object.prototype.toString.call(obj) === "[object String]"; },
+      _isArray: function(obj) { return Object.prototype.toString.call(obj) === "[object Array]"; },
 
       _fireValueChangedEvent: function (newValue) {
         this.fire('value-changed', { value: this.value }, { bubbles: false });
