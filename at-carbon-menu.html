@@ -347,32 +347,32 @@
       _valueChanged: function (newValue, oldValue) {
         if (!this._isString(newValue)) { return; }
 
-        if (newValue === "") {
-          // clear currently selected
-          var selected = this.querySelector('.selected');
-          if (selected) {
-            Polymer.dom(selected).classList.remove('selected');
-          }
+        // clear currently selected
+        var selected = Polymer.dom(this.root).querySelector('.selected');
+        if (selected) {
+          Polymer.dom(selected).classList.remove('selected');
+        }
+
+        if (newValue === "") return;
         
-        } else {
-          var selectedIndex = -1;
-          for (var i = 0; i < this.items.length; i++) {
-            var item = this.items[i];
-            if (item.value === newValue) {
-              selectedIndex = i;
-              break;
-            }
+        var selectedIndex = -1;
+        for (var i = 0; i < this.items.length; i++) {
+          var item = this.items[i];
+          if (item.value === newValue) {
+            selectedIndex = i;
+            break;
           }
-          if (selectedIndex > -1) {
-            var newSelected = this.querySelector('[data-index="' + selectedIndex + '"]');
-            if (newSelected) {
-              // clear previosly selected 
-              var selected = this.querySelector('.selected');
-              if (selected) {
-                Polymer.dom(selected).classList.remove('selected');
-              }
-              newSelected.classList.add('selected');
+        }
+
+        if (selectedIndex > -1) {
+          var newSelected = Polymer.dom(this.root).querySelector('[data-index="' + selectedIndex + '"]');
+          if (newSelected) {
+            // clear previosly selected 
+            var selected = this.querySelector('.selected');
+            if (selected) {
+              Polymer.dom(selected).classList.remove('selected');
             }
+            newSelected.classList.add('selected');
           }
         }
       },
