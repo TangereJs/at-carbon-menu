@@ -191,7 +191,7 @@
       },
 
       _handleItemOnTap: function (event) {
-        var previouslySelected = this.querySelector('.selected');
+        var previouslySelected = Polymer.dom(this.root).querySelector('.selected');
         if (previouslySelected) {
           previouslySelected.classList.remove('selected');
         }
