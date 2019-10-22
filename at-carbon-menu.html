@@ -65,7 +65,7 @@
     </style>
 
     <template is="dom-repeat" items="[[_items]]">
-      <at-core-view view="[[itemView]]" value="[[item]]" data-index$="[[index]]" class$="[[_computeMenuItemClassList(item)]]" on-tap="_handleItemOnTap" on-mouseenter="_handleItemOnMouseEnter" on-mouseleave="_handleItemOnMouseLeave" disabled$="[[item.disabled]]"></at-core-view>
+      <at-core-view id="carbonMenuItem[[index]]" view="[[itemView]]" value="[[item]]" class$="[[_computeMenuItemClassList(item)]]" on-tap="_handleItemOnTap" on-mouseenter="_handleItemOnMouseEnter" on-mouseleave="_handleItemOnMouseLeave" disabled$="[[item.disabled]]"></at-core-view>
     </template>
 
   </template>
@@ -199,7 +199,10 @@
         var tapped = event.currentTarget;
         tapped.classList.add('selected');
 
-        var indexInValue = tapped.getAttribute('data-index');
+        // this is used to parse the number from an id (example: carbonMenuItem12 -> id = 12) and use it to retrieve an item with it's value
+        var tappedId = tapped.getAttribute('id');
+        var indexInValue = tappedId.replace('carbonMenuItem','');
+
         var item = this.items[indexInValue];
 
         this.value = item.value;
@@ -276,7 +279,7 @@
         while (!siblingFound && result) {
           result = direction > 0 ? result.nextElementSibling : result.previousElementSibling;
           if (result) {
-            var dataIndexAttr = result.getAttribute('data-index');
+            var dataIndexAttr = result.getAttribute('id');
             var isDisabled = result.hasAttribute('disabled');
 
             siblingFound = dataIndexAttr && !isDisabled;
@@ -358,7 +361,8 @@
 
         Polymer.dom(highlighted).classList.add('selected');
 
-        var itemIndex = highlighted.getAttribute('data-index');
+        var highlightedId = highlighted.getAttribute('id');
+        var itemIndex = highlightedId.replace('carbonMenuItem','');
         var item = this.items[itemIndex];
         this.value = item.value;
         this._fireValueChangedEvent(this.value);
@@ -391,7 +395,7 @@
         }
 
         if (selectedIndex > -1) {
-          var newSelected = Polymer.dom(this.root).querySelector('[data-index="' + selectedIndex + '"]');
+          var newSelected = Polymer.dom(this.root).querySelector('[id="carbonMenuItem' + selectedIndex + '"]');
           if (newSelected) {
             // clear previosly selected 
             var selected = this.querySelector('.selected');
