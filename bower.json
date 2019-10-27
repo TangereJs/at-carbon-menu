@@ -1,7 +1,7 @@
 {
   "name": "at-carbon-menu",
   "private": true,
-  "version": "0.0.0.1",
+  "version": "0.0.0.5",
   "dependencies": {
     "tangere": "TangereJs/tangere#master",
     "at-theme": "TangereJs/at-theme#master",

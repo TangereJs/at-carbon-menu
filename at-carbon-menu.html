@@ -32,7 +32,7 @@
       }
 
       .carbon-menu-item.highlighted {
-        @apply(--at-text-selected);
+       background-color: var(--at-list-hover-background-color);
       }
 
       .carbon-menu-item.selected,
@@ -40,14 +40,6 @@
         @apply(--at-text-primary-selected);
       }
 
-      /* TEMPORARY SOLUTION. REMOVE WHEN BETTER SOLUTION IS PROVIDED */
-      /* 
-        these styles are from at-carbon-menu-button and are placed here as workaround for the styling of dynamic content of at-core-view under shadowDOM
-        the specific case is at-carbon-menu-button has custom itemsView property which is given to at-core-view via at-carbon-menu 
-        at-carbon-menu creates at-core-view elements and places them in its shadowDOM 
-        at-core-view doesn't create a shadowRoot of its own, so css boundrary is at-carbon-menu
-        styles have to be here so that they can be applied to content rendered with at-core-view dynamically
-       */
       .item-container {
         white-space: nowrap;
       }
